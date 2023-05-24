@@ -10,6 +10,7 @@ packages = [{include = "llama_index_demo"}]
 python = "^3.11"
 llama-index = "^0.6.7"
 nest-asyncio = "^1.5.6"
+python-dotenv = "^1.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
