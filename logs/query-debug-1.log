@@ -1,0 +1,296 @@
+DEBUG:llama_index.storage.kvstore.simple_kvstore:Loading llama_index.storage.kvstore.simple_kvstore from index/docstore.json.
+Loading llama_index.storage.kvstore.simple_kvstore from index/docstore.json.
+DEBUG:llama_index.storage.kvstore.simple_kvstore:Loading llama_index.storage.kvstore.simple_kvstore from index/index_store.json.
+Loading llama_index.storage.kvstore.simple_kvstore from index/index_store.json.
+DEBUG:llama_index.vector_stores.simple:Loading llama_index.vector_stores.simple from index/vector_store.json.
+Loading llama_index.vector_stores.simple from index/vector_store.json.
+INFO:llama_index.indices.loading:Loading all indices.
+Loading all indices.
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+message='Request to OpenAI API' method=post path=https://api.openai.com/v1/embeddings
+DEBUG:openai:api_version=None data='{"input": ["What does load_index_from_storage do and how does it work?"], "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+api_version=None data='{"input": ["What does load_index_from_storage do and how does it work?"], "model": "text-embedding-ada-002", "encoding_format": "base64"}' message='Post details'
+DEBUG:urllib3.util.retry:Converted retries value: 2 -> Retry(total=2, connect=None, read=None, redirect=None, status=None)
+Converted retries value: 2 -> Retry(total=2, connect=None, read=None, redirect=None, status=None)
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): api.openai.com:443
+Starting new HTTPS connection (1): api.openai.com:443
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+https://api.openai.com:443 "POST /v1/embeddings HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=204 request_id=038bbe36e4d94bafba92f20d7822ca64 response_code=200
+message='OpenAI API response' path=https://api.openai.com/v1/embeddings processing_ms=204 request_id=038bbe36e4d94bafba92f20d7822ca64 response_code=200
+DEBUG:llama_index.indices.utils:> Top 2 nodes:
+> [Node ff2b55f9-bfc0-45ba-83bc-cf62c8a04476] [Similarity score:             0.761285] file_path: llama_index/storage/index_store/types.py
+file_name: types.py
+
+from abc import ABC, abs...
+> [Node 429a5a53-5c71-4c62-a03d-a418db3b2771] [Similarity score:             0.759913] file_path: llama_index/indices/loading.py
+file_name: loading.py
+
+from typing import Any, List, Op...
+> Top 2 nodes:
+> [Node ff2b55f9-bfc0-45ba-83bc-cf62c8a04476] [Similarity score:             0.761285] file_path: llama_index/storage/index_store/types.py
+file_name: types.py
+
+from abc import ABC, abs...
+> [Node 429a5a53-5c71-4c62-a03d-a418db3b2771] [Similarity score:             0.759913] file_path: llama_index/indices/loading.py
+file_name: loading.py
+
+from typing import Any, List, Op...
+INFO:llama_index.token_counter.token_counter:> [retrieve] Total LLM token usage: 0 tokens
+> [retrieve] Total LLM token usage: 0 tokens
+INFO:llama_index.token_counter.token_counter:> [retrieve] Total embedding token usage: 16 tokens
+> [retrieve] Total embedding token usage: 16 tokens
+DEBUG:openai:message='Request to OpenAI API' method=post path=https://api.openai.com/v1/completions
+message='Request to OpenAI API' method=post path=https://api.openai.com/v1/completions
+DEBUG:openai:api_version=None data='{"prompt": ["Context information is below. \\n---------------------\\nfile_path: llama_index/storage/index_store/types.py\\nfile_name: types.py\\n\\nfrom abc import ABC, abstractmethod\\nfrom typing import List, Optional\\n\\nfrom llama_index.data_structs.data_structs import IndexStruct\\nimport os\\n\\nDEFAULT_PERSIST_DIR = \\"./storage\\"\\nDEFAULT_PERSIST_FNAME = \\"index_store.json\\"\\nDEFAULT_PERSIST_PATH = os.path.join(DEFAULT_PERSIST_DIR, DEFAULT_PERSIST_FNAME)\\n\\n\\nclass BaseIndexStore(ABC):\\n    @abstractmethod\\n    def index_structs(self) -> List[IndexStruct]:\\n        pass\\n\\n    @abstractmethod\\n    def add_index_struct(self, index_struct: IndexStruct) -> None:\\n        pass\\n\\n    @abstractmethod\\n    def delete_index_struct(self, key: str) -> None:\\n        pass\\n\\n    @abstractmethod\\n    def get_index_struct(\\n        self, struct_id: Optional[str] = None\\n    ) -> Optional[IndexStruct]:\\n        pass\\n\\n    def persist(self, persist_path: str = DEFAULT_PERSIST_PATH) -> None:\\n        \\"\\"\\"Persist the index store to disk.\\"\\"\\"\\n        pass\\n\\nfile_path: llama_index/indices/loading.py\\nfile_name: loading.py\\n\\nfrom typing import Any, List, Optional, Sequence\\nfrom llama_index.indices.base import BaseGPTIndex\\nfrom llama_index.indices.composability.graph import ComposableGraph\\nfrom llama_index.indices.registry import INDEX_STRUCT_TYPE_TO_INDEX_CLASS\\nfrom llama_index.storage.storage_context import StorageContext\\n\\nimport logging\\n\\nlogger = logging.getLogger(__name__)\\n\\n\\ndef load_index_from_storage(\\n    storage_context: StorageContext,\\n    index_id: Optional[str] = None,\\n    **kwargs: Any,\\n) -> BaseGPTIndex:\\n    \\"\\"\\"Load index from storage context.\\n\\n    Args:\\n        storage_context (StorageContext): storage context containing\\n            docstore, index store and vector store.\\n        index_id (Optional[str]): ID of the index to load.\\n            Defaults to None, which assumes there\'s only a single index\\n            in the index store and load it.\\n        **kwargs: Additional keyword args to pass to the index constructors.\\n    \\"\\"\\"\\n    index_ids: Optional[Sequence[str]]\\n    if index_id is None:\\n        index_ids = None\\n    else:\\n        index_ids = [index_id]\\n\\n    indices = load_indices_from_storage(storage_context, index_ids=index_ids, **kwargs)\\n\\n    if len(indices) == 0:\\n        raise ValueError(\\n            \\"No index in storage context, check if you specified the right persist_dir.\\"\\n        )\\n    elif len(indices) > 1:\\n        raise ValueError(\\n            f\\"Expected to load a single index, but got {len(indices)} instead. \\"\\n            \\"Please specify index_id.\\"\\n        )\\n\\n    return indices[0]\\n\\n\\ndef load_indices_from_storage(\\n    storage_context: StorageContext,\\n    index_ids: Optional[Sequence[str]] = None,\\n    **kwargs: Any,\\n) -> List[BaseGPTIndex]:\\n    \\"\\"\\"Load multiple indices from storage context\\n\\n    Args:\\n        storage_context (StorageContext): storage context containing\\n            docstore, index store and vector store.\\n        index_id (Optional[Sequence[str]]): IDs of the indices to load.\\n            Defaults to None, which loads all indices in the index store.\\n        **kwargs: Additional keyword args to pass to the index constructors.\\n    \\"\\"\\"\\n    if index_ids is None:\\n        logger.info(\\"Loading all indices.\\")\\n        index_structs = storage_context.index_store.index_structs()\\n    else:\\n        logger.info(f\\"Loading indices with ids: {index_ids}\\")\\n        index_structs = []\\n        for index_id in index_ids:\\n            index_struct = storage_context.index_store.get_index_struct(index_id)\\n            if index_struct is None:\\n                raise ValueError(f\\"Failed to load index with ID {index_id}\\")\\n---------------------\\nGiven the context information and not prior knowledge, answer the question: What does load_index_from_storage do and how does it work?\\n"], "model": "text-davinci-003", "temperature": 0.0, "max_tokens": 256, "top_p": 1, "frequency_penalty": 0, "presence_penalty": 0, "n": 1, "logit_bias": {}}' message='Post details'
+api_version=None data='{"prompt": ["Context information is below. \\n---------------------\\nfile_path: llama_index/storage/index_store/types.py\\nfile_name: types.py\\n\\nfrom abc import ABC, abstractmethod\\nfrom typing import List, Optional\\n\\nfrom llama_index.data_structs.data_structs import IndexStruct\\nimport os\\n\\nDEFAULT_PERSIST_DIR = \\"./storage\\"\\nDEFAULT_PERSIST_FNAME = \\"index_store.json\\"\\nDEFAULT_PERSIST_PATH = os.path.join(DEFAULT_PERSIST_DIR, DEFAULT_PERSIST_FNAME)\\n\\n\\nclass BaseIndexStore(ABC):\\n    @abstractmethod\\n    def index_structs(self) -> List[IndexStruct]:\\n        pass\\n\\n    @abstractmethod\\n    def add_index_struct(self, index_struct: IndexStruct) -> None:\\n        pass\\n\\n    @abstractmethod\\n    def delete_index_struct(self, key: str) -> None:\\n        pass\\n\\n    @abstractmethod\\n    def get_index_struct(\\n        self, struct_id: Optional[str] = None\\n    ) -> Optional[IndexStruct]:\\n        pass\\n\\n    def persist(self, persist_path: str = DEFAULT_PERSIST_PATH) -> None:\\n        \\"\\"\\"Persist the index store to disk.\\"\\"\\"\\n        pass\\n\\nfile_path: llama_index/indices/loading.py\\nfile_name: loading.py\\n\\nfrom typing import Any, List, Optional, Sequence\\nfrom llama_index.indices.base import BaseGPTIndex\\nfrom llama_index.indices.composability.graph import ComposableGraph\\nfrom llama_index.indices.registry import INDEX_STRUCT_TYPE_TO_INDEX_CLASS\\nfrom llama_index.storage.storage_context import StorageContext\\n\\nimport logging\\n\\nlogger = logging.getLogger(__name__)\\n\\n\\ndef load_index_from_storage(\\n    storage_context: StorageContext,\\n    index_id: Optional[str] = None,\\n    **kwargs: Any,\\n) -> BaseGPTIndex:\\n    \\"\\"\\"Load index from storage context.\\n\\n    Args:\\n        storage_context (StorageContext): storage context containing\\n            docstore, index store and vector store.\\n        index_id (Optional[str]): ID of the index to load.\\n            Defaults to None, which assumes there\'s only a single index\\n            in the index store and load it.\\n        **kwargs: Additional keyword args to pass to the index constructors.\\n    \\"\\"\\"\\n    index_ids: Optional[Sequence[str]]\\n    if index_id is None:\\n        index_ids = None\\n    else:\\n        index_ids = [index_id]\\n\\n    indices = load_indices_from_storage(storage_context, index_ids=index_ids, **kwargs)\\n\\n    if len(indices) == 0:\\n        raise ValueError(\\n            \\"No index in storage context, check if you specified the right persist_dir.\\"\\n        )\\n    elif len(indices) > 1:\\n        raise ValueError(\\n            f\\"Expected to load a single index, but got {len(indices)} instead. \\"\\n            \\"Please specify index_id.\\"\\n        )\\n\\n    return indices[0]\\n\\n\\ndef load_indices_from_storage(\\n    storage_context: StorageContext,\\n    index_ids: Optional[Sequence[str]] = None,\\n    **kwargs: Any,\\n) -> List[BaseGPTIndex]:\\n    \\"\\"\\"Load multiple indices from storage context\\n\\n    Args:\\n        storage_context (StorageContext): storage context containing\\n            docstore, index store and vector store.\\n        index_id (Optional[Sequence[str]]): IDs of the indices to load.\\n            Defaults to None, which loads all indices in the index store.\\n        **kwargs: Additional keyword args to pass to the index constructors.\\n    \\"\\"\\"\\n    if index_ids is None:\\n        logger.info(\\"Loading all indices.\\")\\n        index_structs = storage_context.index_store.index_structs()\\n    else:\\n        logger.info(f\\"Loading indices with ids: {index_ids}\\")\\n        index_structs = []\\n        for index_id in index_ids:\\n            index_struct = storage_context.index_store.get_index_struct(index_id)\\n            if index_struct is None:\\n                raise ValueError(f\\"Failed to load index with ID {index_id}\\")\\n---------------------\\nGiven the context information and not prior knowledge, answer the question: What does load_index_from_storage do and how does it work?\\n"], "model": "text-davinci-003", "temperature": 0.0, "max_tokens": 256, "top_p": 1, "frequency_penalty": 0, "presence_penalty": 0, "n": 1, "logit_bias": {}}' message='Post details'
+DEBUG:urllib3.connectionpool:https://api.openai.com:443 "POST /v1/completions HTTP/1.1" 200 None
+https://api.openai.com:443 "POST /v1/completions HTTP/1.1" 200 None
+DEBUG:openai:message='OpenAI API response' path=https://api.openai.com/v1/completions processing_ms=12904 request_id=10737670139a2768ffa0724ce5d43ca8 response_code=200
+message='OpenAI API response' path=https://api.openai.com/v1/completions processing_ms=12904 request_id=10737670139a2768ffa0724ce5d43ca8 response_code=200
+DEBUG:llama_index.llm_predictor.base:
+load_index_from_storage is a function that loads an index from a StorageContext object. It takes in a StorageContext object and an optional index_id as parameters. If the index_id is not specified, it assumes there is only one index in the index store and loads it. It then passes the index_ids and any additional keyword arguments to the load_indices_from_storage function. This function then retrieves the index structs from the index store and creates a list of BaseGPTIndex objects. If the index_ids are specified, it will only load the indices with the specified ids. Finally, the function returns the list of BaseGPTIndex objects.
+
+load_index_from_storage is a function that loads an index from a StorageContext object. It takes in a StorageContext object and an optional index_id as parameters. If the index_id is not specified, it assumes there is only one index in the index store and loads it. It then passes the index_ids and any additional keyword arguments to the load_indices_from_storage function. This function then retrieves the index structs from the index store and creates a list of BaseGPTIndex objects. If the index_ids are specified, it will only load the indices with the specified ids. Finally, the function returns the list of BaseGPTIndex objects.
+DEBUG:llama_index.indices.response.response_builder:> Initial prompt template: Context information is below. 
+---------------------
+file_path: llama_index/storage/index_store/types.py
+file_name: types.py
+
+from abc import ABC, abstractmethod
+from typing import List, Optional
+
+from llama_index.data_structs.data_structs import IndexStruct
+import os
+
+DEFAULT_PERSIST_DIR = "./storage"
+DEFAULT_PERSIST_FNAME = "index_store.json"
+DEFAULT_PERSIST_PATH = os.path.join(DEFAULT_PERSIST_DIR, DEFAULT_PERSIST_FNAME)
+
+
+class BaseIndexStore(ABC):
+    @abstractmethod
+    def index_structs(self) -> List[IndexStruct]:
+        pass
+
+    @abstractmethod
+    def add_index_struct(self, index_struct: IndexStruct) -> None:
+        pass
+
+    @abstractmethod
+    def delete_index_struct(self, key: str) -> None:
+        pass
+
+    @abstractmethod
+    def get_index_struct(
+        self, struct_id: Optional[str] = None
+    ) -> Optional[IndexStruct]:
+        pass
+
+    def persist(self, persist_path: str = DEFAULT_PERSIST_PATH) -> None:
+        """Persist the index store to disk."""
+        pass
+
+file_path: llama_index/indices/loading.py
+file_name: loading.py
+
+from typing import Any, List, Optional, Sequence
+from llama_index.indices.base import BaseGPTIndex
+from llama_index.indices.composability.graph import ComposableGraph
+from llama_index.indices.registry import INDEX_STRUCT_TYPE_TO_INDEX_CLASS
+from llama_index.storage.storage_context import StorageContext
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def load_index_from_storage(
+    storage_context: StorageContext,
+    index_id: Optional[str] = None,
+    **kwargs: Any,
+) -> BaseGPTIndex:
+    """Load index from storage context.
+
+    Args:
+        storage_context (StorageContext): storage context containing
+            docstore, index store and vector store.
+        index_id (Optional[str]): ID of the index to load.
+            Defaults to None, which assumes there's only a single index
+            in the index store and load it.
+        **kwargs: Additional keyword args to pass to the index constructors.
+    """
+    index_ids: Optional[Sequence[str]]
+    if index_id is None:
+        index_ids = None
+    else:
+        index_ids = [index_id]
+
+    indices = load_indices_from_storage(storage_context, index_ids=index_ids, **kwargs)
+
+    if len(indices) == 0:
+        raise ValueError(
+            "No index in storage context, check if you specified the right persist_dir."
+        )
+    elif len(indices) > 1:
+        raise ValueError(
+            f"Expected to load a single index, but got {len(indices)} instead. "
+            "Please specify index_id."
+        )
+
+    return indices[0]
+
+
+def load_indices_from_storage(
+    storage_context: StorageContext,
+    index_ids: Optional[Sequence[str]] = None,
+    **kwargs: Any,
+) -> List[BaseGPTIndex]:
+    """Load multiple indices from storage context
+
+    Args:
+        storage_context (StorageContext): storage context containing
+            docstore, index store and vector store.
+        index_id (Optional[Sequence[str]]): IDs of the indices to load.
+            Defaults to None, which loads all indices in the index store.
+        **kwargs: Additional keyword args to pass to the index constructors.
+    """
+    if index_ids is None:
+        logger.info("Loading all indices.")
+        index_structs = storage_context.index_store.index_structs()
+    else:
+        logger.info(f"Loading indices with ids: {index_ids}")
+        index_structs = []
+        for index_id in index_ids:
+            index_struct = storage_context.index_store.get_index_struct(index_id)
+            if index_struct is None:
+                raise ValueError(f"Failed to load index with ID {index_id}")
+---------------------
+Given the context information and not prior knowledge, answer the question: What does load_index_from_storage do and how does it work?
+
+> Initial prompt template: Context information is below. 
+---------------------
+file_path: llama_index/storage/index_store/types.py
+file_name: types.py
+
+from abc import ABC, abstractmethod
+from typing import List, Optional
+
+from llama_index.data_structs.data_structs import IndexStruct
+import os
+
+DEFAULT_PERSIST_DIR = "./storage"
+DEFAULT_PERSIST_FNAME = "index_store.json"
+DEFAULT_PERSIST_PATH = os.path.join(DEFAULT_PERSIST_DIR, DEFAULT_PERSIST_FNAME)
+
+
+class BaseIndexStore(ABC):
+    @abstractmethod
+    def index_structs(self) -> List[IndexStruct]:
+        pass
+
+    @abstractmethod
+    def add_index_struct(self, index_struct: IndexStruct) -> None:
+        pass
+
+    @abstractmethod
+    def delete_index_struct(self, key: str) -> None:
+        pass
+
+    @abstractmethod
+    def get_index_struct(
+        self, struct_id: Optional[str] = None
+    ) -> Optional[IndexStruct]:
+        pass
+
+    def persist(self, persist_path: str = DEFAULT_PERSIST_PATH) -> None:
+        """Persist the index store to disk."""
+        pass
+
+file_path: llama_index/indices/loading.py
+file_name: loading.py
+
+from typing import Any, List, Optional, Sequence
+from llama_index.indices.base import BaseGPTIndex
+from llama_index.indices.composability.graph import ComposableGraph
+from llama_index.indices.registry import INDEX_STRUCT_TYPE_TO_INDEX_CLASS
+from llama_index.storage.storage_context import StorageContext
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+
+def load_index_from_storage(
+    storage_context: StorageContext,
+    index_id: Optional[str] = None,
+    **kwargs: Any,
+) -> BaseGPTIndex:
+    """Load index from storage context.
+
+    Args:
+        storage_context (StorageContext): storage context containing
+            docstore, index store and vector store.
+        index_id (Optional[str]): ID of the index to load.
+            Defaults to None, which assumes there's only a single index
+            in the index store and load it.
+        **kwargs: Additional keyword args to pass to the index constructors.
+    """
+    index_ids: Optional[Sequence[str]]
+    if index_id is None:
+        index_ids = None
+    else:
+        index_ids = [index_id]
+
+    indices = load_indices_from_storage(storage_context, index_ids=index_ids, **kwargs)
+
+    if len(indices) == 0:
+        raise ValueError(
+            "No index in storage context, check if you specified the right persist_dir."
+        )
+    elif len(indices) > 1:
+        raise ValueError(
+            f"Expected to load a single index, but got {len(indices)} instead. "
+            "Please specify index_id."
+        )
+
+    return indices[0]
+
+
+def load_indices_from_storage(
+    storage_context: StorageContext,
+    index_ids: Optional[Sequence[str]] = None,
+    **kwargs: Any,
+) -> List[BaseGPTIndex]:
+    """Load multiple indices from storage context
+
+    Args:
+        storage_context (StorageContext): storage context containing
+            docstore, index store and vector store.
+        index_id (Optional[Sequence[str]]): IDs of the indices to load.
+            Defaults to None, which loads all indices in the index store.
+        **kwargs: Additional keyword args to pass to the index constructors.
+    """
+    if index_ids is None:
+        logger.info("Loading all indices.")
+        index_structs = storage_context.index_store.index_structs()
+    else:
+        logger.info(f"Loading indices with ids: {index_ids}")
+        index_structs = []
+        for index_id in index_ids:
+            index_struct = storage_context.index_store.get_index_struct(index_id)
+            if index_struct is None:
+                raise ValueError(f"Failed to load index with ID {index_id}")
+---------------------
+Given the context information and not prior knowledge, answer the question: What does load_index_from_storage do and how does it work?
+
+DEBUG:llama_index.indices.response.response_builder:> Initial response: 
+load_index_from_storage is a function that loads an index from a StorageContext object. It takes in a StorageContext object and an optional index_id as parameters. If the index_id is not specified, it assumes there is only one index in the index store and loads it. It then passes the index_ids and any additional keyword arguments to the load_indices_from_storage function. This function then retrieves the index structs from the index store and creates a list of BaseGPTIndex objects. If the index_ids are specified, it will only load the indices with the specified ids. Finally, the function returns the list of BaseGPTIndex objects.
+> Initial response: 
+load_index_from_storage is a function that loads an index from a StorageContext object. It takes in a StorageContext object and an optional index_id as parameters. If the index_id is not specified, it assumes there is only one index in the index store and loads it. It then passes the index_ids and any additional keyword arguments to the load_indices_from_storage function. This function then retrieves the index structs from the index store and creates a list of BaseGPTIndex objects. If the index_ids are specified, it will only load the indices with the specified ids. Finally, the function returns the list of BaseGPTIndex objects.
+INFO:llama_index.token_counter.token_counter:> [get_response] Total LLM token usage: 1551 tokens
+> [get_response] Total LLM token usage: 1551 tokens
+INFO:llama_index.token_counter.token_counter:> [get_response] Total embedding token usage: 0 tokens
+> [get_response] Total embedding token usage: 0 tokens
+
+load_index_from_storage is a function that loads an index from a StorageContext object. It takes in a StorageContext object and an optional index_id as parameters. If the index_id is not specified, it assumes there is only one index in the index store and loads it. It then passes the index_ids and any additional keyword arguments to the load_indices_from_storage function. This function then retrieves the index structs from the index store and creates a list of BaseGPTIndex objects. If the index_ids are specified, it will only load the indices with the specified ids. Finally, the function returns the list of BaseGPTIndex objects.
